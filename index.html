@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Toloka-Kit Docs</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; }
+        .search { width: 100%; padding: 10px; margin: 20px 0; border: 1px solid #ddd; border-radius: 4px; }
+        .doc-list { list-style: none; padding: 0; }
+        .doc-item { margin: 10px 0; }
+        .doc-link { color: #2980b9; text-decoration: none; }
+        .doc-link:hover { text-decoration: underline; }
+        .count { color: #7f8c8d; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <h1>Toloka-Kit Documentation</h1>
+    <input type="text" class="search" placeholder="Search documents..." id="search">
+    <div id="count" class="count">Loading documents...</div>
+    <ul class="doc-list" id="docList"></ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const searchInput = document.getElementById('search');
+            const docList = document.getElementById('docList');
+            const countElement = document.getElementById('count');
+            
+            async function fetchDocumentList() {
+                try {
+                    const response = await fetch('documents/');
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    return Array.from(doc.querySelectorAll('a'))
+                        .map(a => a.href)
+                        .filter(href => href.endsWith('.html'))
+                        .map(href => 'documents/' + href.split('/').pop());
+                } catch (error) {
+                    console.error('Error loading documents:', error);
+                    return [];
+                }
+            }
+            
+            function renderList(docs, filter = '') {
+                docList.innerHTML = '';
+                const filterLower = filter.toLowerCase();
+                const filtered = docs.filter(file => 
+                    file.toLowerCase().includes(filterLower));
+                
+                filtered.forEach(file => {
+                    const li = document.createElement('li');
+                    li.className = 'doc-item';
+                    
+                    const a = document.createElement('a');
+                    a.className = 'doc-link';
+                    a.href = file;
+                    
+                    const prettyName = file
+                        .replace('documents/toloka.ai_docs_', '')
+                        .replace(/_/g, '/')
+                        .replace('.html', '');
+                    
+                    a.textContent = prettyName;
+                    li.appendChild(a);
+                    docList.appendChild(li);
+                });
+                
+                countElement.textContent = `Showing ${filtered.length} of ${docs.length} documents`;
+            }
+            
+            const allDocs = await fetchDocumentList();
+            renderList(allDocs);
+            
+            searchInput.addEventListener('input', (e) => {
+                renderList(allDocs, e.target.value);
+            });
+        });
+    </script>
+</body>
+</html>
