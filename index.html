@@ -26,22 +26,11 @@
             const countElement = document.getElementById('count');
             
             async function fetchDocumentList() {
-                try {
-                    const response = await fetch('documents/');
-                    const html = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    return Array.from(doc.querySelectorAll('a'))
-                        .map(a => a.href)
-                        .filter(href => href.endsWith('.html'))
-                        .map(href => 'documents/' + href.split('/').pop());
-                } catch (error) {
-                    console.error('Error loading documents:', error);
-                    return [];
-                }
+                const response = await fetch('document-list.json');
+                if (!response.ok) return [];
+                return await response.json();
             }
-            
+
             function renderList(docs, filter = '') {
                 docList.innerHTML = '';
                 const filterLower = filter.toLowerCase();
