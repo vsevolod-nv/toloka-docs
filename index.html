@@ -49,20 +49,22 @@
                     const a = document.createElement('a');
                     a.className = 'doc-link';
                     
-                    const href = file.replace('documents/', '')
-                                    .replace('toloka.ai_docs_', '')
-                                    .replace(/_/g, '/')
-                                    .replace('.html', '');
+                    a.href = file;
                     
-                    a.href = href + '/';
-                    a.textContent = href.replace('toloka-kit/', ''); 
+                    const displayName = file
+                        .replace('documents/toloka.ai_docs_', '')
+                        .replace('toloka-kit_', 'toloka-kit/')
+                        .replace(/_/g, '/')
+                        .replace('.html', '');
+                    
+                    a.textContent = displayName;
                     li.appendChild(a);
                     docList.appendChild(li);
                 });
                 
                 countElement.textContent = `Showing ${filtered.length} of ${docs.length} documents`;
             }
-           
+        
             const allDocs = await fetchDocumentList();
             renderList(allDocs);
             
@@ -71,5 +73,6 @@
             });
         });
     </script>
+
 </body>
 </html>
