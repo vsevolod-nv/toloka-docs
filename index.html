@@ -26,9 +26,14 @@
             const countElement = document.getElementById('count');
             
             async function fetchDocumentList() {
-                const response = await fetch('document-list.json');
-                if (!response.ok) return [];
-                return await response.json();
+                try {
+                    const response = await fetch('document-list.json');
+                    if (!response.ok) throw new Error('Failed to load document list');
+                    return await response.json();
+                } catch (error) {
+                    console.error('Error:', error);
+                    return [];
+                }
             }
 
             function renderList(docs, filter = '') {
@@ -43,8 +48,8 @@
                     
                     const a = document.createElement('a');
                     a.className = 'doc-link';
-                    const href = file.replace('documents/', '');
-                    a.href = href;
+                    // Исправлено: убираем 'documents/' из ссылки
+                    a.href = file.replace('documents/', '');
                     
                     const prettyName = file
                         .replace('documents/toloka.ai_docs_', '')
