@@ -48,22 +48,21 @@
                     
                     const a = document.createElement('a');
                     a.className = 'doc-link';
-                    // Исправлено: убираем 'documents/' из ссылки
-                    a.href = file.replace('documents/', '');
                     
-                    const prettyName = file
-                        .replace('documents/toloka.ai_docs_', '')
-                        .replace(/_/g, '/')
-                        .replace('.html', '');
+                    const href = file.replace('documents/', '')
+                                    .replace('toloka.ai_docs_', '')
+                                    .replace(/_/g, '/')
+                                    .replace('.html', '');
                     
-                    a.textContent = prettyName;
+                    a.href = href + '/';
+                    a.textContent = href.replace('toloka-kit/', ''); 
                     li.appendChild(a);
                     docList.appendChild(li);
                 });
                 
                 countElement.textContent = `Showing ${filtered.length} of ${docs.length} documents`;
             }
-            
+           
             const allDocs = await fetchDocumentList();
             renderList(allDocs);
             
